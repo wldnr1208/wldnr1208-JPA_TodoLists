@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Entity
-public class User {
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,4 +20,10 @@ public class User {
 
     @Column(nullable = false)
     private String password; // 비밀번호 필드 추가
+
+    public User(String password, String email, String username) {
+        this.password = password;
+        this.email = email;
+        this.username = username;
+    }
 }
