@@ -34,11 +34,25 @@ public class UserService {
                 .toList();
 
         // Wrap in a map with "userList" key
+        Map<String, Object> usrAllResponse = new HashMap<>();
+        usrAllResponse.put("code", 200);
+        usrAllResponse.put("message", "SUCCESS");
+        usrAllResponse.put("userList", users);
+
+        return usrAllResponse;
+    }
+
+
+    public Map<String, Object> findById(Long id) {
+        User user = userRepository.findByIdOrElseThrow(id);
+        UserResponseDto userResponseDto = new UserResponseDto(user.getUsername(), user.getCreatedAt(), user.getEmail());
+
         Map<String, Object> response = new HashMap<>();
         response.put("code", 200);
         response.put("message", "SUCCESS");
-        response.put("userList", users);
-
+        response.put("data", Map.of(
+                "userDetail", userResponseDto
+        ));
         return response;
     }
 }

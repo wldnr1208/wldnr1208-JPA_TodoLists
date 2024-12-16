@@ -26,4 +26,6 @@ public class User extends BaseEntity {
         this.email = email;
         this.username = username;
     }
+
+
 }

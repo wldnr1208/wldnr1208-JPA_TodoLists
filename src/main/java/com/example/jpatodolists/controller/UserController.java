@@ -17,16 +17,25 @@ import java.util.Map;
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
-
+    
+    //유저 생성
     @PostMapping("/signup")
     public ResponseEntity<UserCreateResponseDto> signUp(@RequestBody UserCreateRequestDto requestDto) {
         UserCreateResponseDto userResponseDto = userService.signUp(requestDto.getEmail(), requestDto.getUsername(), requestDto.getPassword());
         return new ResponseEntity<>(userResponseDto, HttpStatus.CREATED);
     }
-
+    
+    //유저 전체조회
     @GetMapping
     public ResponseEntity<Map<String, Object>> findAll() {
-        Map<String, Object> response = userService.findAll();
+        Map<String, Object> usrAllResponse = userService.findAll();
+        return new ResponseEntity<>(usrAllResponse, HttpStatus.OK);
+    }
+    
+    //유저 상세조회
+    @GetMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> findById(@PathVariable Long id) {
+        Map<String, Object> response = userService.findById(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
