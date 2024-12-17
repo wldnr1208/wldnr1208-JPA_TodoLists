@@ -60,7 +60,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        userService.delete(id);
+        userService.softDelete(id); // 소프트 딜리트 메서드 호출
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

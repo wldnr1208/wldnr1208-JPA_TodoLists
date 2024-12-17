@@ -4,7 +4,9 @@ package com.example.jpatodolists.service;
 import com.example.jpatodolists.dto.UpdateUserResponseDto;
 import com.example.jpatodolists.dto.UserCreateResponseDto;
 import com.example.jpatodolists.dto.UserResponseDto;
+import com.example.jpatodolists.entity.Todo;
 import com.example.jpatodolists.entity.User;
+import com.example.jpatodolists.repository.TodoRepository;
 import com.example.jpatodolists.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final TodoRepository todoRepository;
 
     public UserCreateResponseDto signUp(String password,String email, String username) {
         User user = new User(username,password, email);
@@ -29,7 +32,8 @@ public class UserService {
     }
 
     public Map<String, Object> findAll() {
-        List<UserResponseDto> users = userRepository.findAll()
+        // 소프트 딜리트되지 않은 유저만 조회
+        List<UserResponseDto> users = userRepository.findAllByIsDeletedFalse()
                 .stream()
                 .map(UserResponseDto::toUser)
                 .toList();
@@ -74,8 +78,18 @@ public class UserService {
         return new UpdateUserResponseDto(foundUser.getUsername(), foundUser.getCreatedAt(), foundUser.getEmail());
     }
 
-    public void delete(Long id) {
+    @Transactional
+    public void softDelete(Long id) {
+        // User 조회
         User foundUser = userRepository.findByIdOrElseThrow(id);
-        userRepository.delete(foundUser);
+
+        // User 소프트 딜리트 적용
+        foundUser.setIsDeleted(true);
+
+        // User와 관련된 Todo의 소프트 딜리트 적용
+        List<Todo> userTodos = todoRepository.findAllByUserId(id); // Todo 조회
+        for (Todo todo : userTodos) {
+            todo.setIsDeleted(true);
+        }
     }
 }

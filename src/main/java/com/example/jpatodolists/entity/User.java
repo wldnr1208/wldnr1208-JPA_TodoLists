@@ -32,4 +32,9 @@ public class User extends BaseEntity {
         this.username = username;
     }
     private boolean isDeleted = false; // 소프트 딜리트 플래그
+
+    public void setIsDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
 }
