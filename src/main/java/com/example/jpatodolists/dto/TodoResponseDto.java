@@ -1,17 +1,21 @@
 package com.example.jpatodolists.dto;
 
+import com.example.jpatodolists.entity.Todo;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor
 public class TodoResponseDto {
-    private Long id;               // 할일 ID
-    private String title;          // 할일 제목
-    private String content;        // 할일 내용
-    private String username;       // 작성자명
-    private LocalDateTime createdAt; // 생성일
-    private LocalDateTime modifiedAt; // 수정일
+    private String title;
+    private String content;
+
+
+    public TodoResponseDto(String title, String content) {
+        this.content = content;
+        this.title = title;
+    }
+
+    public static TodoResponseDto toTodo(Todo todo) {
+        /*User 엔티티에서 username 가져오기 todo.getUser().getUsername()*/
+        return new TodoResponseDto(todo.getContent(), todo.getTitle());
+    }
 }
