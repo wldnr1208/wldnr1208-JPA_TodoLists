@@ -31,5 +31,10 @@ public class Todo extends BaseEntity{
         this.content = content;
         this.user = user;
     }
+    public void update(String newTitle, String newContent) {
+        this.title = newTitle;
+        this.content = newContent;
+    }
 
+    private boolean isDeleted = false; // 소프트 딜리트 플래그
 }

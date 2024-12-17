@@ -31,4 +31,5 @@ public class User extends BaseEntity {
         this.email = email;
         this.username = username;
     }
+    private boolean isDeleted = false; // 소프트 딜리트 플래그
 }
