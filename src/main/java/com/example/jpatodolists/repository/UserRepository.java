@@ -6,8 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+    //로그인 인증 인가
+    Optional<User> findByEmail(String email);
+
     //소프트 딜리트 때 12번 줄 추가
     List<User> findAllByIsDeletedFalse();
 
