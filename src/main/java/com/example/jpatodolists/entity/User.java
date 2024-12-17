@@ -27,10 +27,14 @@ public class User extends BaseEntity {
         this.username = username;
     }
 
-
-
     public void updateUser(String email, String username) {
         this.email = email;
         this.username = username;
     }
+    private boolean isDeleted = false; // 소프트 딜리트 플래그
+
+    public void setIsDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
 }

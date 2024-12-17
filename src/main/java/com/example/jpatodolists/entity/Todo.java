@@ -17,22 +17,28 @@ public class Todo extends BaseEntity{
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "longtext")
     private String content;
 
+    //단방향으로 사용하기 위해 ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
 
     private User user; // 연관관계 매핑
+
     public Todo(String title, String content, User user) {
         this.title = title;
         this.content = content;
         this.user = user;
     }
-
-    public void update(String title, String content) {
-        this.title = title;
-        this.content = content;
+    public void update(String newTitle, String newContent) {
+        this.title = newTitle;
+        this.content = newContent;
     }
 
+    private boolean isDeleted = false; // 소프트 딜리트 플래그
+
+    public void setIsDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 }

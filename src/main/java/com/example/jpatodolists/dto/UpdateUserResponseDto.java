@@ -1,8 +1,6 @@
 package com.example.jpatodolists.dto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 //리스폰스 반환용
