@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+    //email 중복체크 추가
+    boolean existsByEmail(String email);
+
     //로그인 인증 인가
     Optional<User> findByEmail(String email);
 
