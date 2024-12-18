@@ -15,23 +15,25 @@ public class User extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String username;
 
+    @Column(nullable = false)
+    private String password;
+
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
-    private String password; // 비밀번호 필드 추가
+    private boolean isDeleted = false;
 
-    public User(String password, String email, String username) {
+    // 생성자 매개변수 순서 수정: username, password, email
+    public User(String username, String password, String email) {
+        this.username = username;
         this.password = password;
         this.email = email;
-        this.username = username;
     }
 
     public void updateUser(String email, String username) {
         this.email = email;
         this.username = username;
     }
-    private boolean isDeleted = false; // 소프트 딜리트 플래그
 
     public void setIsDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;
