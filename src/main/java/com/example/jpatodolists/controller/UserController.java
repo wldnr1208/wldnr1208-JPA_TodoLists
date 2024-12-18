@@ -20,7 +20,11 @@ public class UserController {
     //유저 생성
     @PostMapping("/signup")
     public ResponseEntity<UserCreateResponseDto> signUp(@RequestBody UserCreateRequestDto requestDto) {
-        UserCreateResponseDto userResponseDto = userService.signUp(requestDto.getEmail(), requestDto.getUsername(), requestDto.getPassword());
+        UserCreateResponseDto userResponseDto = userService.signUp(
+                requestDto.getUsername(),  // username을 첫 번째로
+                requestDto.getPassword(),  // password를 두 번째로
+                requestDto.getEmail()      // email을 세 번째로
+        );
         return new ResponseEntity<>(userResponseDto, HttpStatus.CREATED);
     }
     

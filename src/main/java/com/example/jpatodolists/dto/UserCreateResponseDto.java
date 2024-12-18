@@ -8,17 +8,18 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 public class UserCreateResponseDto {
-    private Long id;               // 유저 ID
-    private String username;       // 유저명
-    private String email;          // 이메일
+    private Long id;
+    private String username;
+    private String email;
     private String password;
-    private LocalDateTime createdAt; // 생성일
+    private LocalDateTime createdAt;
 
-    public UserCreateResponseDto(Long id, String password, String username, String email, LocalDateTime createdAt) {
+    // 생성자 매개변수 순서를 필드 순서와 동일하게 수정
+    public UserCreateResponseDto(Long id, String username, String email, String password, LocalDateTime createdAt) {
         this.id = id;
         this.username = username;
         this.email = email;
-        this.createdAt = createdAt;
         this.password = password;
+        this.createdAt = createdAt;
     }
 }

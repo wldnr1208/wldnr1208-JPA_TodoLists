@@ -26,21 +26,26 @@ public class UserService {
     private final TodoRepository todoRepository;
     private final PassWordEncoder passwordEncoder; // 추가
 
-    public UserCreateResponseDto signUp(String password,String email, String username) {
+    public UserCreateResponseDto signUp(String username, String password, String email) {  // 순서 변경
         // 이메일 중복 체크
         if (userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("이미 사용중인 이메일입니다.");
         }
 
-        // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(password);
 
+        // User 생성자 순서: username, encodedPassword, email
         User user = new User(username, encodedPassword, email);
         User savedUser = userRepository.save(user);
-        return new UserCreateResponseDto(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail(), savedUser.getPassword(), savedUser.getCreatedAt());
 
+        return new UserCreateResponseDto(
+                savedUser.getId(),
+                savedUser.getUsername(),  // 유저명
+                savedUser.getEmail(),     // 이메일
+                "[PROTECTED]",            // 비밀번호
+                savedUser.getCreatedAt()
+        );
     }
-
     public Map<String, Object> findAll() {
         // 소프트 딜리트되지 않은 유저만 조회
         List<UserResponseDto> users = userRepository.findAllByIsDeletedFalse()
