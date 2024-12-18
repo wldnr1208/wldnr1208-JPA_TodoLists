@@ -53,4 +53,14 @@ public class TodoController {
         todoService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @GetMapping("/paging")
+    public ResponseEntity<Map<String, Object>> findAllWithPaging(
+            @RequestParam Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Map<String, Object> response = todoService.findAllWithPaging(userId, page, size);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

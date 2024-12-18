@@ -1,22 +1,21 @@
 package com.example.jpatodolists.service;
 
 import com.example.jpatodolists.dto.CreateTodoResponseDto;
+import com.example.jpatodolists.dto.TodoPageResponseDto;
 import com.example.jpatodolists.dto.TodoResponseDto;
-import com.example.jpatodolists.dto.UpdateTodoRequestDto;
 import com.example.jpatodolists.dto.UpdateTodoResponseDto;
 import com.example.jpatodolists.entity.Todo;
 import com.example.jpatodolists.entity.User;
 import com.example.jpatodolists.repository.TodoRepository;
 import com.example.jpatodolists.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,5 +88,37 @@ public class TodoService {
     public void delete(Long id) {
         Todo foundTodoId = todoRepository.findByOrElseThrow(id);
         todoRepository.delete(foundTodoId);
+    }
+
+    //페이징용 getService
+    public Map<String, Object> findAllWithPaging(Long userId, int page, int size) {
+        // 페이지 요청 객체 생성 (수정일 기준 내림차순)
+        Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
+
+        // 유저 존재 확인
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+
+        // 페이징된 할일 목록 조회
+        Page<Todo> todoPage = todoRepository.findAllByUserIdWithPaging(userId, pageable);
+
+        // TodoPageResponseDto로 변환
+        Page<TodoPageResponseDto> responseDtoPage = todoPage.map(todo -> {
+            Long commentCount = todoRepository.countCommentsByTodoId(todo.getId());
+            return new TodoPageResponseDto(todo, commentCount);
+        });
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("code", 200);
+        response.put("message", "SUCCESS");
+        response.put("data", Map.of(
+                "content", responseDtoPage.getContent(),
+                "currentPage", responseDtoPage.getNumber(),
+                "totalPages", responseDtoPage.getTotalPages(),
+                "totalElements", responseDtoPage.getTotalElements(),
+                "size", responseDtoPage.getSize()
+        ));
+
+        return response;
     }
 }
