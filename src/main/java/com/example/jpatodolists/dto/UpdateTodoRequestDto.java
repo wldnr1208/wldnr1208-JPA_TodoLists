@@ -7,8 +7,8 @@ public class UpdateTodoRequestDto {
     private final String newTitle;
     private final String newContent;
 
-    public UpdateTodoRequestDto(String newContent, String newTitle) {
-        this.newContent = newContent;
+    public UpdateTodoRequestDto(String newTitle, String newContent) {
         this.newTitle = newTitle;
+        this.newContent = newContent;
     }
 }

@@ -10,12 +10,12 @@ public class TodoResponseDto {
 
 
     public TodoResponseDto(String title, String content) {
-        this.content = content;
         this.title = title;
+        this.content = content;
     }
 
     public static TodoResponseDto toTodo(Todo todo) {
         /*User 엔티티에서 username 가져오기 todo.getUser().getUsername()*/
-        return new TodoResponseDto(todo.getContent(), todo.getTitle());
+        return new TodoResponseDto(todo.getTitle(), todo.getContent());
     }
 }
