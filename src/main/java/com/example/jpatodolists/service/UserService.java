@@ -1,6 +1,7 @@
 package com.example.jpatodolists.service;
 
 
+import com.example.jpatodolists.config.PassWordEncoder;
 import com.example.jpatodolists.dto.UpdateUserResponseDto;
 import com.example.jpatodolists.dto.UserCreateResponseDto;
 import com.example.jpatodolists.dto.UserResponseDto;
@@ -23,9 +24,18 @@ import java.util.Map;
 public class UserService {
     private final UserRepository userRepository;
     private final TodoRepository todoRepository;
+    private final PassWordEncoder passwordEncoder; // 추가
 
     public UserCreateResponseDto signUp(String password,String email, String username) {
-        User user = new User(username,password, email);
+        // 이메일 중복 체크
+        if (userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("이미 사용중인 이메일입니다.");
+        }
+
+        // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(password);
+
+        User user = new User(username, encodedPassword, email);
         User savedUser = userRepository.save(user);
         return new UserCreateResponseDto(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail(), savedUser.getPassword(), savedUser.getCreatedAt());
 
