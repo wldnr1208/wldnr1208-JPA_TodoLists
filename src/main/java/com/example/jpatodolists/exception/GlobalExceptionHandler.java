@@ -6,6 +6,8 @@ import com.example.jpatodolists.exception.auth.LoginFailedException;
 import com.example.jpatodolists.exception.auth.UnauthorizedException;
 import com.example.jpatodolists.exception.auth.WrongCredentialsException;
 import com.example.jpatodolists.exception.common.NotFoundException;
+import com.example.jpatodolists.exception.common.TodoNotFoundException;
+import com.example.jpatodolists.exception.common.UserNotFoundException;
 import com.example.jpatodolists.exception.validation.DuplicateEmailException;
 import com.example.jpatodolists.exception.validation.DuplicateUsernameException;
 import com.example.jpatodolists.exception.validation.WrongAccessException;
@@ -63,6 +65,13 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(e.getMessage()));
     }
 
+    // 사용자를 찾을 수 없는 예외
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUserNotFound(UserNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(e.getMessage()));
+    }
+
     // 잘못된 접근 예외 처리
     @ExceptionHandler(WrongAccessException.class)
     public ResponseEntity<ApiResponse<Void>> handleWrongAccess(WrongAccessException e) {
@@ -74,6 +83,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(WrongCredentialsException.class)
     public ResponseEntity<ApiResponse<Void>> handleWrongCredentials(WrongCredentialsException e) {
         return ResponseEntity.badRequest()
+                .body(ApiResponse.error(e.getMessage()));
+    }
+
+    // 사용자를 찾을 수 없는 예외
+    @ExceptionHandler(TodoNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUserNotFound(TodoNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.error(e.getMessage()));
     }
 }
