@@ -1,4 +1,4 @@
-package com.example.jpatodolists.dto;
+package com.example.jpatodolists.dto.todo;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

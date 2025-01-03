@@ -1,9 +1,9 @@
 package com.example.jpatodolists.controller;
 
-import com.example.jpatodolists.dto.CreateTodoRequestDto;
-import com.example.jpatodolists.dto.CreateTodoResponseDto;
-import com.example.jpatodolists.dto.UpdateTodoRequestDto;
-import com.example.jpatodolists.dto.UpdateTodoResponseDto;
+import com.example.jpatodolists.dto.todo.CreateTodoRequestDto;
+import com.example.jpatodolists.dto.comment.UpdateCommentRequestDto;
+import com.example.jpatodolists.dto.todo.UpdateTodoRequestDto;
+import com.example.jpatodolists.dto.todo.UpdateTodoResponseDto;
 import com.example.jpatodolists.service.TodoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,12 +21,13 @@ public class TodoController {
     private final TodoService todoService;
 
     @PostMapping
-    public ResponseEntity<CreateTodoResponseDto> createTodo(@RequestBody CreateTodoRequestDto requestDto,
-                                                            @RequestParam Long userId) {
-        CreateTodoResponseDto responseDto =
+    public ResponseEntity<UpdateCommentRequestDto.CreateTodoResponseDto> createTodo(@RequestBody CreateTodoRequestDto requestDto,
+                                                                                    @RequestParam Long userId) {
+        UpdateCommentRequestDto.CreateTodoResponseDto responseDto =
                 todoService.createTodo(requestDto.getContent(), requestDto.getTitle(), userId);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
+
     @GetMapping
     public ResponseEntity<Map<String, Object>> findAll(@RequestParam Long userId) {
         Map<String, Object> todoAllResponse = todoService.findAll(userId);

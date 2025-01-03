@@ -1,5 +1,6 @@
-package com.example.jpatodolists.dto;
+package com.example.jpatodolists.dto.user;
 
+import com.example.jpatodolists.entity.User;
 import lombok.Getter;
 import java.time.LocalDateTime;
 
@@ -14,5 +15,14 @@ public class UpdateUserResponseDto {
         this.username = username;
         this.createdAt = createdAt;
         this.email = email;
+    }
+
+    // User 엔티티로부터 DTO를 생성하는 정적 팩토리 메서드
+    public static UpdateUserResponseDto from(User user) {
+        return new UpdateUserResponseDto(
+                user.getUsername(),
+                user.getCreatedAt(),
+                user.getEmail()
+        );
     }
 }
