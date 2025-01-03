@@ -1,5 +1,6 @@
-package com.example.jpatodolists.dto;
+package com.example.jpatodolists.dto.user;
 
+import com.example.jpatodolists.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,5 +22,16 @@ public class UserCreateResponseDto {
         this.email = email;
         this.password = password;
         this.createdAt = createdAt;
+    }
+
+    // User 엔티티로부터 DTO를 생성하는 정적 팩토리 메서드
+    public static UserCreateResponseDto from(User user) {
+        return new UserCreateResponseDto(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                "[PROTECTED]",  // 비밀번호는 보안을 위해 마스킹 처리
+                user.getCreatedAt()
+        );
     }
 }

@@ -1,9 +1,9 @@
 package com.example.jpatodolists.service;
 
-import com.example.jpatodolists.dto.CreateTodoResponseDto;
-import com.example.jpatodolists.dto.TodoPageResponseDto;
-import com.example.jpatodolists.dto.TodoResponseDto;
-import com.example.jpatodolists.dto.UpdateTodoResponseDto;
+import com.example.jpatodolists.dto.comment.UpdateCommentRequestDto;
+import com.example.jpatodolists.dto.todo.TodoPageResponseDto;
+import com.example.jpatodolists.dto.todo.TodoResponseDto;
+import com.example.jpatodolists.dto.todo.UpdateTodoResponseDto;
 import com.example.jpatodolists.entity.Todo;
 import com.example.jpatodolists.entity.User;
 import com.example.jpatodolists.repository.TodoRepository;
@@ -28,7 +28,7 @@ public class TodoService {
     private final UserRepository userRepository; // UserRepository 필요
 
 
-    public CreateTodoResponseDto createTodo(String content, String title, Long userId) {
+    public UpdateCommentRequestDto.CreateTodoResponseDto createTodo(String content, String title, Long userId) {
         // User 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
@@ -37,7 +37,7 @@ public class TodoService {
         Todo savedTodo = todoRepository.save(todo);
 
         // Response DTO 반환
-        return new CreateTodoResponseDto(
+        return new UpdateCommentRequestDto.CreateTodoResponseDto(
                 savedTodo.getModifiedAt(),
                 savedTodo.getCreatedAt(),
                 savedTodo.getContent(),

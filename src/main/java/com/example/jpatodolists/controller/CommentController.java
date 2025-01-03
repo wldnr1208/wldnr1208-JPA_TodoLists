@@ -1,9 +1,9 @@
 package com.example.jpatodolists.controller;
 
-import com.example.jpatodolists.dto.CreateCommentRequestDtd;
-import com.example.jpatodolists.dto.CreateCommentResponseDto;
-import com.example.jpatodolists.dto.UpdateCommentRequestDto;
-import com.example.jpatodolists.dto.UpdateCommentResponseDto;
+import com.example.jpatodolists.dto.comment.CreateCommentRequestDtd;
+import com.example.jpatodolists.dto.comment.CreateCommentResponseDto;
+import com.example.jpatodolists.dto.comment.UpdateCommentRequestDto;
+import com.example.jpatodolists.dto.comment.UpdateCommentResponseDto;
 import com.example.jpatodolists.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,8 +1,8 @@
 package com.example.jpatodolists.service;
 
-import com.example.jpatodolists.dto.CreateCommentResponseDto;
-import com.example.jpatodolists.dto.GetCommentResponseDto;
-import com.example.jpatodolists.dto.UpdateCommentResponseDto;
+import com.example.jpatodolists.dto.comment.CreateCommentResponseDto;
+import com.example.jpatodolists.dto.comment.GetCommentResponseDto;
+import com.example.jpatodolists.dto.comment.UpdateCommentResponseDto;
 import com.example.jpatodolists.entity.Comment;
 import com.example.jpatodolists.entity.Todo;
 import com.example.jpatodolists.entity.User;

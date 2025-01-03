@@ -1,71 +1,76 @@
 package com.example.jpatodolists.controller;
 
-import com.example.jpatodolists.dto.*;
+import com.example.jpatodolists.common.ApiResponse;
+import com.example.jpatodolists.dto.user.*;
 import com.example.jpatodolists.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
-    
-    //유저 생성
+
+    /**
+     * 회원 가입 API
+     * 201 Created 상태코드 반환으로 리소스 생성을 명확히 표현
+     */
     @PostMapping("/signup")
-    public ResponseEntity<UserCreateResponseDto> signUp(@RequestBody UserCreateRequestDto requestDto) {
-        UserCreateResponseDto userResponseDto = userService.signUp(
-                requestDto.getUsername(),  // username을 첫 번째로
-                requestDto.getPassword(),  // password를 두 번째로
-                requestDto.getEmail()      // email을 세 번째로
+    public ResponseEntity<ApiResponse<UserCreateResponseDto>> signUp(@RequestBody UserCreateRequestDto requestDto) {
+        UserCreateResponseDto response = userService.signUp(
+                requestDto.getUsername(),
+                requestDto.getPassword(),
+                requestDto.getEmail()
         );
-        return new ResponseEntity<>(userResponseDto, HttpStatus.CREATED);
-    }
-    
-    //유저 전체조회
-    @GetMapping
-    public ResponseEntity<Map<String, Object>> findAll() {
-        Map<String, Object> usrAllResponse = userService.findAll();
-        return new ResponseEntity<>(usrAllResponse, HttpStatus.OK);
-    }
-    
-    //유저 상세조회
-    @GetMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> findById(@PathVariable Long id) {
-        Map<String, Object> response = userService.findById(id);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("회원가입 성공", response));
     }
 
-    //유저 이메일, 유저명 업데이트
+    /**
+     * 전체 사용자 조회 API
+     * 컨트롤러는 요청/응답 변환과 전달만 담당
+     */
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<UserResponseDto>>> findAll() {
+        return ResponseEntity.ok(userService.findAll());
+    }
+
+    /**
+     * 단일 사용자 조회 API
+     * 경로 변수를 통해 RESTful한 URL 구조 구현
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<UserResponseDto>> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.findById(id));
+    }
+
+    /**
+     * 사용자 정보 수정 API
+     * PATCH 메서드로 부분 수정을 명시적으로 표현
+     */
     @PatchMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequestDto requestDto) {
-        // 업데이트된 유저 정보를 반환받음
-        UpdateUserResponseDto updatedUser = userService.updateUser(
+    public ResponseEntity<ApiResponse<UpdateUserResponseDto>> updateUser(
+            @PathVariable Long id,
+            @RequestBody UpdateUserRequestDto requestDto) {
+        return ResponseEntity.ok(userService.updateUser(
                 id,
                 requestDto.getOldEmail(),
                 requestDto.getNewEmail(),
                 requestDto.getOldUsername(),
                 requestDto.getNewUsername()
-        );
-        // 성공 메시지와 함께 업데이트된 유저 정보를 리스폰스에 담아 반환
-        Map<String, Object> response = new HashMap<>();
-        response.put("code", 200);
-        response.put("message", "SUCCESS");
-        response.put("data", Map.of("updatedUser", updatedUser));
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        ));
     }
 
+    /**
+     * 사용자 삭제 API
+     * 실제로는 소프트 삭제를 수행하지만 클라이언트에게는 추상화된 인터페이스 제공
+     */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        userService.softDelete(id); // 소프트 딜리트 메서드 호출
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.softDelete(id));
     }
-
 }

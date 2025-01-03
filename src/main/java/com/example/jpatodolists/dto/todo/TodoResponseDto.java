@@ -1,4 +1,4 @@
-package com.example.jpatodolists.dto;
+package com.example.jpatodolists.dto.todo;
 
 import com.example.jpatodolists.entity.Todo;
 import lombok.Getter;

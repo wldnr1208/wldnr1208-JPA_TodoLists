@@ -35,8 +35,8 @@ public class User extends BaseEntity {
         this.username = username;
     }
 
+
     public void setIsDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
-
 }
