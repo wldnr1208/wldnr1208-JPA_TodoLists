@@ -18,7 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 @Service
@@ -101,7 +100,7 @@ public class TodoService {
     public ApiResponse<UpdateTodoResponseDto> updateTodo(Long id, String newTitle, String newContent) {
         Todo todo = findTodoById(id);  // Todo 조회
         updateTodoContent(todo, newTitle, newContent);  // 내용 업데이트
-        return ApiResponse.success("할 일이 수정되었습니다",
+        return ApiResponse.success("할 일이 수정되었습니다 만약 빈 값이면 원래의 값이 저장됩니다.",
                 new UpdateTodoResponseDto(todo.getId(), todo.getTitle(), todo.getContent(), todo.getModifiedAt()));
     }
 
@@ -195,6 +194,7 @@ public class TodoService {
         todo.update(updatedTitle, updatedContent);
     }
 
+
     /**
      * 페이징 요청 객체를 생성합니다.
      * 수정일 기준 내림차순으로 정렬합니다.
@@ -227,4 +227,5 @@ public class TodoService {
                 "size", page.getSize()                // 페이지당 데이터 수
         );
     }
+
 }

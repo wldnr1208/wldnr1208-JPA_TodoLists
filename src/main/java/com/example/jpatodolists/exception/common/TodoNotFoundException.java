@@ -1,7 +1,13 @@
 package com.example.jpatodolists.exception.common;
 
-public class TodoNotFoundException extends RuntimeException {
-    public TodoNotFoundException(String message) {
-        super(message);
+import com.example.jpatodolists.exception.ErrorCode;
+
+public class TodoNotFoundException extends BusinessException {
+    public TodoNotFoundException() {
+        super(ErrorCode.TODO_NOT_FOUND);
+    }
+
+    public TodoNotFoundException(String detail) {
+        super(ErrorCode.TODO_NOT_FOUND, detail);
     }
 }
