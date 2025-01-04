@@ -83,26 +83,6 @@ public class TodoService {
         return ApiResponse.success("할 일 목록을 성공적으로 조회했습니다", responseData);
     }
 
-    /**
-     * 특정 Todo의 내용을 수정합니다.
-     *
-     * @param id 수정할 Todo의 ID
-     * @param newTitle 새로운 제목 (null 가능)
-     * @param newContent 새로운 내용 (null 가능)
-     * @return 수정된 Todo 정보를 포함한 응답 객체
-     *
-     * 프로세스:
-     * 1. Todo 존재 여부 확인
-     * 2. 제목과 내용 업데이트 (null이나 빈 문자열인 경우 기존 값 유지)
-     * 3. 변경 감지(Dirty Checking)를 통한 자동 업데이트
-     */
-    @Transactional
-    public ApiResponse<UpdateTodoResponseDto> updateTodo(Long id, String newTitle, String newContent) {
-        Todo todo = findTodoById(id);  // Todo 조회
-        updateTodoContent(todo, newTitle, newContent);  // 내용 업데이트
-        return ApiResponse.success("할 일이 수정되었습니다 만약 빈 값이면 원래의 값이 저장됩니다.",
-                new UpdateTodoResponseDto(todo.getId(), todo.getTitle(), todo.getContent(), todo.getModifiedAt()));
-    }
 
     /**
      * Todo를 삭제합니다.
@@ -185,13 +165,16 @@ public class TodoService {
     }
 
     /**
-     * Todo의 제목과 내용을 업데이트합니다.
-     * null이거나 빈 문자열인 경우 기존 값을 유지합니다.
+     * Todo 수정
+     * 변경 감지(Dirty Checking)를 활용한 엔티티 수정
      */
-    private void updateTodoContent(Todo todo, String newTitle, String newContent) {
-        String updatedTitle = (newTitle != null && !newTitle.isBlank()) ? newTitle : todo.getTitle();
-        String updatedContent = (newContent != null && !newContent.isBlank()) ? newContent : todo.getContent();
-        todo.update(updatedTitle, updatedContent);
+    @Transactional
+    public ApiResponse<UpdateTodoResponseDto> updateTodo(Long id, String newTitle, String newContent, Long userId) {
+        Todo todo = findTodoById(id);
+        User user = findUserById(userId);
+        updateTodoContent(todo, newTitle, newContent, user);  // 사용자 정보 전달
+        return ApiResponse.success("할 일이 수정되었습니다",
+                new UpdateTodoResponseDto(todo.getId(), todo.getTitle(), todo.getContent(), todo.getModifiedAt()));
     }
 
 
@@ -226,6 +209,17 @@ public class TodoService {
                 "totalElements", page.getTotalElements(), // 전체 데이터 수
                 "size", page.getSize()                // 페이지당 데이터 수
         );
+    }
+
+    /**
+     * Todo의 제목과 내용을 업데이트합니다.
+     * null이거나 빈 문자열인 경우 기존 값을 유지합니다.
+     * 요청한 사용자의 권한을 검증합니다.
+     */
+    private void updateTodoContent(Todo todo, String newTitle, String newContent, User requestUser) {
+        String updatedTitle = (newTitle != null && !newTitle.isBlank()) ? newTitle : todo.getTitle();
+        String updatedContent = (newContent != null && !newContent.isBlank()) ? newContent : todo.getContent();
+        todo.update(updatedTitle, updatedContent, requestUser);
     }
 
 }

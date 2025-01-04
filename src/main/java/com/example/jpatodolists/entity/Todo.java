@@ -1,5 +1,6 @@
 package com.example.jpatodolists.entity;
 
+import com.example.jpatodolists.exception.auth.UnauthorizedException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,19 +27,44 @@ public class Todo extends BaseEntity{
 
     private User user; // 연관관계 매핑
 
+    private boolean isDeleted = false; // 소프트 딜리트 플래그
+
     public Todo(String title, String content, User user) {
+        validateCreate(title, content, user);
         this.title = title;
         this.content = content;
         this.user = user;
     }
-    public void update(String newTitle, String newContent) {
+
+    public void update(String newTitle, String newContent, User requestUser) {
+        validateUpdate(newTitle, newContent, requestUser);
         this.title = newTitle;
         this.content = newContent;
     }
 
-    private boolean isDeleted = false; // 소프트 딜리트 플래그
+    public void markAsDeleted() {
+        this.isDeleted = true;
+    }
 
-    public void setIsDeleted(boolean isDeleted) {
-        this.isDeleted = isDeleted;
+    private void validateCreate(String title, String content, User user) {
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("제목은 필수값입니다.");
+        }
+        if (user == null) {
+            throw new IllegalArgumentException("사용자 정보는 필수값입니다.");
+        }
+    }
+
+    private void validateUpdate(String newTitle, String newContent, User requestUser) {
+        validateOwnership(requestUser);
+        if (newTitle == null || newTitle.isBlank()) {
+            throw new IllegalArgumentException("제목은 필수값입니다.");
+        }
+    }
+
+    private void validateOwnership(User requestUser) {
+        if (!user.getId().equals(requestUser.getId())) {
+            throw new UnauthorizedException("해당 작업을 수행할 권한이 없습니다.");
+        }
     }
 }

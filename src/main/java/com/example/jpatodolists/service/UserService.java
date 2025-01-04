@@ -67,8 +67,8 @@ public class UserService {
     public ApiResponse<UpdateUserResponseDto> updateUser(Long id, String oldEmail, String newEmail,
                                                          String oldUsername, String newUsername) {
         User user = findUserById(id);
-        validateUserCredentials(user, oldEmail, oldUsername);  // 인증 정보 검증 분리
-        user.updateUser(newEmail, newUsername);  // 도메인 객체에서 상태 변경 처리
+        validateUserCredentials(user, oldEmail, oldUsername);
+        user.update(newEmail, newUsername);  // 도메인 로직을 엔티티로 위임
         return ApiResponse.success("유저 정보 수정 성공", UpdateUserResponseDto.from(user));
     }
 
@@ -79,11 +79,10 @@ public class UserService {
     @Transactional
     public ApiResponse<Void> softDelete(Long id) {
         User user = findUserById(id);
-        user.setIsDeleted(true);
-        softDeleteUserTodos(id);  // 연관 데이터 처리 로직 분리
+        List<Todo> userTodos = todoRepository.findAllByUserId(id);
+        user.delete(userTodos);  // 도메인 로직을 엔티티로 위임
         return ApiResponse.success("유저 삭제 성공");
     }
-
     // Private helper methods - 내부 구현을 캡슐화하고 코드 재사용성 향상
 
     /**
@@ -123,12 +122,4 @@ public class UserService {
         }
     }
 
-    /**
-     * 연관된 Todo 항목들 소프트 삭제 처리
-     * 단일 책임 원칙에 따라 별도 메서드로 분리
-     */
-    private void softDeleteUserTodos(Long userId) {
-        List<Todo> userTodos = todoRepository.findAllByUserId(userId);
-        userTodos.forEach(todo -> todo.setIsDeleted(true));
-    }
 }
