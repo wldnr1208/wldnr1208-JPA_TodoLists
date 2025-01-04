@@ -34,11 +34,14 @@ public class TodoController {
     @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse<UpdateTodoResponseDto>> updateTodo(
             @PathVariable Long id,
-            @RequestBody UpdateTodoRequestDto requestDto) {
+            @RequestBody UpdateTodoRequestDto requestDto,
+            @RequestParam Long userId) {
+
         return ResponseEntity.ok(todoService.updateTodo(
                 id,
                 requestDto.getNewTitle(),
-                requestDto.getNewContent()
+                requestDto.getNewContent(),
+                userId
         ));
     }
 
