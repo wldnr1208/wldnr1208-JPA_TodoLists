@@ -28,76 +28,78 @@ public class UserService {
 
     /**
      * 회원 가입을 처리하는 메서드
-     * SRP(단일 책임 원칙)에 따라 검증, 생성, 저장 로직을 분리
+     * 엔티티에 검증 로직을 위임하고 서비스는 순수하게 플로우 제어만 담당
      */
-    @Transactional  // 쓰기 작업이므로 readOnly = false로 오버라이드
+    @Transactional
     public UserCreateResponseDto signUp(String username, String password, String email) {
-        validateEmail(email);  // 이메일 중복 검증 분리
-        User user = createUser(username, password, email);  // 사용자 생성 로직 분리
+        validateDuplicateEmail(email);
+        User user = createUser(username, password, email);
         User savedUser = userRepository.save(user);
-        return UserCreateResponseDto.from(savedUser);  // DTO 변환 책임을 DTO 클래스에 위임
+        return UserCreateResponseDto.from(savedUser);
     }
 
     /**
      * 전체 사용자 목록 조회
-     * 스트림 API를 사용하여 선언적 프로그래밍 구현
      */
     public ApiResponse<List<UserResponseDto>> findAll() {
         List<UserResponseDto> users = userRepository.findAllByIsDeletedFalse()
                 .stream()
-                .map(UserResponseDto::from)  // 메서드 레퍼런스를 사용하여 가독성 향상
+                .map(UserResponseDto::from)
                 .toList();
         return ApiResponse.success("유저 목록 조회 성공", users);
     }
 
     /**
      * 단일 사용자 상세 조회
-     * 결과값 없음을 대비한 예외 처리를 포함
      */
     public ApiResponse<UserResponseDto> findById(Long id) {
-        User user = findUserById(id);  // 공통 조회 로직 재사용
+        User user = findUserById(id);
         return ApiResponse.success("유저 상세 조회 성공", UserResponseDto.from(user));
     }
 
     /**
      * 사용자 정보 업데이트
-     * 트랜잭션 안에서 영속성 컨텍스트의 변경 감지 기능 활용
+     * 인증 검증을 엔티티에 위임
      */
     @Transactional
     public ApiResponse<UpdateUserResponseDto> updateUser(Long id, String oldEmail, String newEmail,
                                                          String oldUsername, String newUsername) {
+        // 새로운 이메일이 현재 사용자의 이메일과 다르고, 다른 사용자가 사용 중인 경우 체크
+        if (!oldEmail.equals(newEmail) && userRepository.existsByEmail(newEmail)) {
+            throw new DuplicateEmailException("이미 사용중인 이메일입니다.");
+        }
+
         User user = findUserById(id);
-        validateUserCredentials(user, oldEmail, oldUsername);
-        user.update(newEmail, newUsername);  // 도메인 로직을 엔티티로 위임
+        user.validateCredentials(oldEmail, oldUsername);
+        user.update(newEmail, newUsername);
         return ApiResponse.success("유저 정보 수정 성공", UpdateUserResponseDto.from(user));
     }
-
     /**
      * 사용자 소프트 삭제
-     * 연관된 Todo 항목들도 함께 처리
+     * 삭제 로직을 엔티티에 위임
      */
     @Transactional
     public ApiResponse<Void> softDelete(Long id) {
         User user = findUserById(id);
         List<Todo> userTodos = todoRepository.findAllByUserId(id);
-        user.delete(userTodos);  // 도메인 로직을 엔티티로 위임
+        // 삭제 로직을 엔티티에 위임
+        user.delete(userTodos);
         return ApiResponse.success("유저 삭제 성공");
     }
-    // Private helper methods - 내부 구현을 캡슐화하고 코드 재사용성 향상
+
+    // Private helper methods
 
     /**
      * 이메일 중복 검증
-     * 명확한 커스텀 예외를 발생시켜 의미 전달 향상
      */
-    private void validateEmail(String email) {
+    private void validateDuplicateEmail(String email) {
         if (userRepository.existsByEmail(email)) {
             throw new DuplicateEmailException("이미 사용중인 이메일입니다.");
         }
     }
 
     /**
-     * 사용자 생성 로직
-     * 패스워드 암호화 등 생성 관련 로직을 한 곳에서 처리
+     * 사용자 생성
      */
     private User createUser(String username, String password, String email) {
         String encodedPassword = passwordEncoder.encode(password);
@@ -105,21 +107,10 @@ public class UserService {
     }
 
     /**
-     * 공통 사용자 조회 로직
-     * DRY 원칙을 적용하여 중복 제거
+     * 사용자 조회
      */
     private User findUserById(Long id) {
         return userRepository.findByIdOrElseThrow(id);
-    }
-
-    /**
-     * 사용자 인증 정보 검증
-     * 보안 관련 로직을 분리하여 관리
-     */
-    private void validateUserCredentials(User user, String email, String username) {
-        if (!user.getEmail().equals(email) || !user.getUsername().equals(username)) {
-            throw new WrongCredentialsException("인증 정보가 일치하지 않습니다.");
-        }
     }
 
 }
