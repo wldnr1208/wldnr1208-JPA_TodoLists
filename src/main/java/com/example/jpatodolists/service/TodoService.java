@@ -177,6 +177,16 @@ public class TodoService {
                 new UpdateTodoResponseDto(todo.getId(), todo.getTitle(), todo.getContent(), todo.getModifiedAt()));
     }
 
+    /**
+     * Todo의 제목과 내용을 업데이트합니다.
+     * null이거나 빈 문자열인 경우 기존 값을 유지합니다.
+     * 요청한 사용자의 권한을 검증합니다.
+     */
+    private void updateTodoContent(Todo todo, String newTitle, String newContent, User requestUser) {
+        String updatedTitle = (newTitle != null && !newTitle.isBlank()) ? newTitle : todo.getTitle();
+        String updatedContent = (newContent != null && !newContent.isBlank()) ? newContent : todo.getContent();
+        todo.update(updatedTitle, updatedContent, requestUser);
+    }
 
     /**
      * 페이징 요청 객체를 생성합니다.
@@ -211,15 +221,6 @@ public class TodoService {
         );
     }
 
-    /**
-     * Todo의 제목과 내용을 업데이트합니다.
-     * null이거나 빈 문자열인 경우 기존 값을 유지합니다.
-     * 요청한 사용자의 권한을 검증합니다.
-     */
-    private void updateTodoContent(Todo todo, String newTitle, String newContent, User requestUser) {
-        String updatedTitle = (newTitle != null && !newTitle.isBlank()) ? newTitle : todo.getTitle();
-        String updatedContent = (newContent != null && !newContent.isBlank()) ? newContent : todo.getContent();
-        todo.update(updatedTitle, updatedContent, requestUser);
-    }
+
 
 }

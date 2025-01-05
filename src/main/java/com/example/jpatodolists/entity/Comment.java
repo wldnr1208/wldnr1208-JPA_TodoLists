@@ -32,11 +32,21 @@ public class Comment extends BaseEntity {
         this.todo = todo;
     }
 
-    public void update(String content) {
-        this.content = content;
-    }
-
     public void setIsDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+    public void update(String newContent) {
+        validateContent(newContent);
+        this.content = newContent;
+    }
+
+    private void validateContent(String content) {
+        if (content == null || content.isBlank()) {
+            throw new IllegalArgumentException("댓글 내용은 필수입니다.");
+        }
+        if (content.length() > 500) {  // 예시 길이 제한
+            throw new IllegalArgumentException("댓글은 500자를 초과할 수 없습니다.");
+        }
     }
 }
